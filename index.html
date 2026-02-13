@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フラット35 診断ボード - 株式会社アズールモーゲージ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-deep: #0f172a;
+            --gold-muted: #c5a059;
+            --gold-light: #e2c28d;
+        }
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--navy-deep);
+            color: #f8fafc;
+            background-image: radial-gradient(circle at top right, rgba(197, 160, 89, 0.05), transparent);
+        }
+        .serif { font-family: 'Noto Serif JP', serif; }
+        
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #c5a059 0%, #e2c28d 50%, #c5a059 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .premium-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            border-radius: 1.5rem;
+        }
+
+        input[type="number"], select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: right;
+            font-family: 'Noto Serif JP', serif;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        .rate-input {
+            font-size: 1rem !important;
+            width: 70px !important;
+        }
+
+        select {
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--gold-light);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 2px;
+            background: rgba(197, 160, 89, 0.3);
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--gold-muted);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--navy-deep);
+        }
+
+        .label-text {
+            font-size: 10px;
+            font-weight: 800;
+            color: #94a3b8;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .method-toggle, .danshin-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+        }
+        .method-btn, .danshin-btn {
+            flex: 1;
+            padding: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: all 0.3s;
+            color: #94a3b8;
+        }
+        .method-btn.active, .danshin-btn.active {
+            background: var(--gold-muted);
+            color: var(--navy-deep);
+        }
+
+        @media print {
+            .no-print { display: none; }
+            body { background: white; color: black; }
+            .premium-card { border: 1px solid #ccc; backdrop-filter: none; background: white; }
+            input, select { border: none !important; background: transparent !important; color: black !important; }
+        }
+    </style>
+</head>
+<body class="py-10 px-4">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <div class="inline-block border-b border-gold-muted pb-2 mb-4">
+                <p class="text-[10px] tracking-[0.5em] text-slate-400 font-bold uppercase">Professional Loan Diagnostic Tool</p>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-black serif gold-gradient-text mb-2">FLAT 35 借入可能額 ＆ 診断ボード</h1>
+        </header>
+
+        <div class="grid lg:grid-cols-12 gap-8">
+            <!-- 左側：入力コントロール -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- 属性情報 -->
+                <div class="premium-card p-6 md:p-8 border-l-4 border-l-gold-muted">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-1 h-4 bg-gold-muted"></div>
+                        <h2 class="text-sm font-bold tracking-tighter uppercase">属性情報</h2>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-10">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <label class="label-text">世帯年収 (税込)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="num-income" value="0" step="10" oninput="sync('income', 'num')" class="w-[120px]">
+                                    <span class="text-xs text-slate-500 font-bold">万円</span>
+                                </div>
+                            </div>
+                            <input type="range" id="range-income" min="0" max="2500" step="10" value="0" oninput="sync('income', 'range')">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <label class="label-text">他債務 月々返済額</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="num-other-loan-monthly" value="0" step="0.1" oninput="sync('other-loan-monthly', 'num')" class="w-[120px]">
+                                    <span class="text-xs text-slate-500 font-bold">万円</span>
+                                </div>
+                            </div>
+                            <input type="range" id="range-other-loan-monthly" min="0" max="30" step="0.1" value="0" oninput="sync('other-loan-monthly', 'range')">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 借入条件 -->
+                <div class="premium-card p-6 md:p-8">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-1 h-4 bg-slate-500"></div>
+                        <h2 class="text-sm font-bold tracking-tighter uppercase">借入希望条件</h2>
+                    </div>
+
+                    <div class="space-y-10">
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="label-text block mb-4">返済方式</label>
+                                <div class="method-toggle">
+                                    <button id="btn-method-equal-total" class="method-btn active" onclick="setMethod('equal-total')">元利均等</button>
+                                    <button id="btn-method-equal-principal" class="method-btn" onclick="setMethod('equal-principal')">元金均等</button>
+                                </div>
+                                <input type="hidden" id="val-method" value="equal-total">
+                            </div>
+                            <div>
+                                <label class="label-text block mb-4">団体信用生命保険</label>
+                                <div class="danshin-toggle">
+                                    <button id="btn-danshin-on" class="danshin-btn active" onclick="setDanshin(true)">加入する</button>
+                                    <button id="btn-danshin-off" class="danshin-btn" onclick="setDanshin(false)">加入しない</button>
+                                </div>
+                                <input type="hidden" id="val-danshin" value="true">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <label class="label-text">返済期間</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="num-period" value="35" step="1" oninput="sync('period', 'num')" class="w-[80px]">
+                                        <span class="text-xs text-slate-500 font-bold">年</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-period" min="10" max="35" step="1" value="35" oninput="sync('period', 'range')">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <label class="label-text">物件価格 + 諸費用 (借入希望額)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="num-amount" value="0" step="10" oninput="sync('amount', 'num')" class="w-[120px]">
+                                    <span class="text-xs text-slate-500 font-bold">万円</span>
+                                </div>
+                            </div>
+                            <input type="range" id="range-amount" min="0" max="15000" step="10" value="0" oninput="sync('amount', 'range')">
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-6 border-t border-white/5 pt-8">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="label-text">審査金利</label>
+                                    <div class="flex items-center gap-1">
+                                        <input type="number" id="num-rate-exam" value="3.50" step="0.01" oninput="sync('rate-exam', 'num')" class="rate-input">
+                                        <span class="text-[10px] text-white serif font-bold">%</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-rate-exam" min="0.5" max="5.0" step="0.01" value="3.50" oninput="sync('rate-exam', 'range')">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="label-text">1〜5年目基準金利</label>
+                                    <div class="flex items-center gap-1">
+                                        <input type="number" id="num-rate-init" value="1.82" step="0.01" oninput="sync('rate-init', 'num')" class="rate-input">
+                                        <span class="text-[10px] text-gold-light serif font-bold">%</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-rate-init" min="0.1" max="5.0" step="0.01" value="1.82" oninput="sync('rate-init', 'range')">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="label-text">6年目以降基準金利</label>
+                                    <div class="flex items-center gap-1">
+                                        <input type="number" id="num-rate-full" value="1.82" step="0.01" oninput="sync('rate-full', 'num')" class="rate-input">
+                                        <span class="text-[10px] text-white serif font-bold">%</span>
+                                    </div>
+                                </div>
+                                <input type="range" id="range-rate-full" min="0.1" max="5.0" step="0.01" value="1.82" oninput="sync('rate-full', 'range')">
+                            </div>
+                        </div>
+                        <div class="bg-blue-500/10 p-3 rounded text-[10px] text-blue-300 border border-blue-500/20">
+                            ※ 団信に加入しない場合、実行金利から一律 <b>0.2%</b> 引き下げて計算します。審査金利は変わりません。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：計算結果 -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="premium-card p-8 bg-gradient-to-br from-slate-800 to-navy-deep border-gold-muted/40 shadow-2xl">
+                    <p class="text-[10px] font-bold text-gold-muted tracking-[0.3em] uppercase mb-4">借入可能額の目安 (審査基準)</p>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span class="text-5xl font-black serif gold-gradient-text" id="res-limit-amount">0</span>
+                        <span class="text-xl font-bold text-gold-muted">万円</span>
+                    </div>
+                    <div class="space-y-3 mt-6 pt-6 border-t border-white/10">
+                        <div class="flex justify-between text-[11px]">
+                            <span class="text-slate-400">返済比率上限</span>
+                            <span id="res-ratio-limit" class="text-white font-bold">0%</span>
+                        </div>
+                        <div class="flex justify-between text-[11px]">
+                            <span class="text-slate-400">審査上の初月返済枠</span>
+                            <span id="res-allow-monthly" class="text-white font-bold">¥0</span>
+                        </div>
+                        <div id="limit-status" class="mt-4 p-3 rounded-lg text-center text-[10px] font-bold"></div>
+                    </div>
+                </div>
+
+                <div class="premium-card p-8 space-y-8">
+                    <div class="text-center">
+                        <p class="text-[10px] font-bold text-slate-500 tracking-[0.3em] uppercase mb-6">毎月の返済額 (実行時予想)</p>
+                        <div class="flex items-center justify-around gap-2">
+                            <div class="text-center">
+                                <p class="text-[9px] text-gold-muted font-bold mb-2 uppercase tracking-widest">1〜5年目</p>
+                                <div class="flex items-baseline gap-1 justify-center">
+                                    <span class="text-xs text-slate-400 font-bold">¥</span>
+                                    <span id="res-monthly-first" class="text-4xl font-black serif">0</span>
+                                </div>
+                                <p class="text-[8px] text-gold-muted/60 mt-1" id="label-rate-first"></p>
+                            </div>
+                            <div class="w-px h-12 bg-white/10"></div>
+                            <div class="text-center">
+                                <p class="text-[9px] text-slate-500 font-bold mb-2 uppercase tracking-widest">6年目以降</p>
+                                <div class="flex items-baseline gap-1 justify-center">
+                                    <span class="text-xs text-slate-400 font-bold">¥</span>
+                                    <span id="res-monthly-step" class="text-3xl font-black serif text-slate-300">0</span>
+                                </div>
+                                <p class="text-[8px] text-slate-500/60 mt-1" id="label-rate-step"></p>
+                            </div>
+                        </div>
+                        <p class="text-[9px] text-slate-500 mt-4 serif" id="res-method-desc"></p>
+                    </div>
+
+                    <div class="h-px bg-white/5"></div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/5 p-4 rounded-xl">
+                            <p class="text-[9px] text-slate-500 font-bold mb-1 uppercase tracking-tighter">返済比率 (審査基準)</p>
+                            <p id="res-current-ratio" class="text-lg font-bold serif">0%</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl">
+                            <p class="text-[9px] text-slate-500 font-bold mb-1 uppercase tracking-tighter">概算利息総額</p>
+                            <p id="res-total-interest" class="text-lg font-bold serif text-gold-light">¥0万</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 no-print">
+                        <button onclick="window.print()" class="w-full border border-gold-muted/50 text-gold-muted hover:bg-gold-muted hover:text-navy-deep transition-all py-3 rounded-lg text-[10px] font-bold tracking-[0.2em] uppercase">シミュレーション結果を印刷</button>
+                        <button onclick="location.href='mailto:info@azure-mb.co.jp'" class="w-full bg-gold-muted text-navy-deep py-3 rounded-lg text-[10px] font-black tracking-[0.2em] uppercase">アズールモーゲージに相談</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setMethod(val) {
+            document.getElementById('val-method').value = val;
+            document.getElementById('btn-method-equal-total').classList.toggle('active', val === 'equal-total');
+            document.getElementById('btn-method-equal-principal').classList.toggle('active', val === 'equal-principal');
+            update();
+        }
+
+        function setDanshin(val) {
+            document.getElementById('val-danshin').value = val;
+            document.getElementById('btn-danshin-on').classList.toggle('active', val === true);
+            document.getElementById('btn-danshin-off').classList.toggle('active', val === false);
+            update();
+        }
+
+        function sync(id, source) {
+            const numInput = document.getElementById('num-' + id);
+            const rangeInput = document.getElementById('range-' + id);
+            if (source === 'num') {
+                rangeInput.value = numInput.value;
+            } else {
+                numInput.value = rangeInput.value;
+            }
+            update();
+        }
+
+        function update() {
+            const income = parseFloat(document.getElementById('num-income').value) || 0;
+            const otherLoanMonthly = parseFloat(document.getElementById('num-other-loan-monthly').value) || 0;
+            const amount = parseFloat(document.getElementById('num-amount').value) || 0;
+            const period = parseFloat(document.getElementById('num-period').value) || 0;
+            const method = document.getElementById('val-method').value;
+            const danshin = document.getElementById('val-danshin').value === "true";
+            
+            const rateExam = parseFloat(document.getElementById('num-rate-exam').value) || 0;
+            const danshinDiscount = danshin ? 0 : 0.2;
+            const rateInit = Math.max(0, (parseFloat(document.getElementById('num-rate-init').value) || 0) - danshinDiscount);
+            const rateFull = Math.max(0, (parseFloat(document.getElementById('num-rate-full').value) || 0) - danshinDiscount);
+
+            document.getElementById('label-rate-first').innerText = "適用金利: " + rateInit.toFixed(3) + "%";
+            document.getElementById('label-rate-step').innerText = "適用金利: " + rateFull.toFixed(3) + "%";
+
+            const n = period * 12;
+            const otherLoanAnnual = otherLoanMonthly * 12;
+
+            const maxRatio = income < 400 ? 0.30 : 0.35;
+            const annualAllowableTotal = income * maxRatio;
+            const annualAllowableMortgage = Math.max(0, annualAllowableTotal - otherLoanAnnual);
+            const monthlyAllowableMortgage = (annualAllowableMortgage * 10000) / 12;
+
+            let limitMan = 0;
+            const iExam = rateExam / 100 / 12;
+            
+            if (income > 0 && iExam > 0 && n > 0) {
+                if (method === 'equal-total') {
+                    const factor = (iExam * Math.pow(1 + iExam, n)) / (Math.pow(1 + iExam, n) - 1);
+                    limitMan = Math.floor((monthlyAllowableMortgage / factor) / 10000);
+                } else {
+                    limitMan = Math.floor((monthlyAllowableMortgage / (1/n + iExam)) / 10000);
+                }
+            }
+
+            const P = amount * 10000;
+            let mFirst = 0;
+            let mStep = 0;
+            let totalInterest = 0;
+
+            if (P > 0 && n > 0) {
+                if (method === 'equal-total') {
+                    const calcET = (p, r, t) => {
+                        const i = r / 100 / 12;
+                        return i > 0 ? (p * i * Math.pow(1 + i, t)) / (Math.pow(1 + i, t) - 1) : p / t;
+                    };
+                    mFirst = calcET(P, rateInit, n);
+                    
+                    let bal = P;
+                    const iInit = rateInit / 100 / 12;
+                    for(let k=0; k<60; k++) {
+                        const interest = bal * iInit;
+                        bal -= Math.max(0, mFirst - interest);
+                    }
+                    mStep = calcET(Math.max(0, bal), rateFull, n - 60);
+                    totalInterest = (mFirst * 60) + (mStep * (n - 60)) - P;
+                } else {
+                    const ppm = P / n;
+                    mFirst = ppm + (P * (rateInit / 100 / 12));
+                    const balAfter60 = Math.max(0, P - (ppm * 60));
+                    mStep = ppm + (balAfter60 * (rateFull / 100 / 12));
+                    
+                    const sumInterest = (initialBal, r, count) => {
+                        let sum = 0;
+                        const i = r / 100 / 12;
+                        for(let k = 0; k < count; k++) {
+                            const currentBal = Math.max(0, initialBal - (ppm * k));
+                            sum += currentBal * i;
+                        }
+                        return sum;
+                    };
+                    totalInterest = sumInterest(P, rateInit, 60) + sumInterest(balAfter60, rateFull, n - 60);
+                }
+            }
+
+            const mExam = (P > 0) ? (
+                (method === 'equal-total') 
+                ? (iExam > 0 ? (P * iExam * Math.pow(1 + iExam, n)) / (Math.pow(1 + iExam, n) - 1) : P/n)
+                : (P/n + P*iExam)
+            ) : 0;
+            
+            const currentRatio = income > 0 ? (((mExam * 12 / 10000) + otherLoanAnnual) / income * 100).toFixed(1) : 0;
+
+            document.getElementById('res-limit-amount').innerText = Math.max(0, limitMan).toLocaleString();
+            document.getElementById('res-ratio-limit').innerText = (maxRatio * 100) + "%";
+            document.getElementById('res-allow-monthly').innerText = "¥" + Math.max(0, Math.round(monthlyAllowableMortgage)).toLocaleString();
+            
+            document.getElementById('res-monthly-first').innerText = Math.round(mFirst).toLocaleString();
+            document.getElementById('res-monthly-step').innerText = Math.round(mStep).toLocaleString();
+            document.getElementById('res-current-ratio').innerText = currentRatio + "%";
+            document.getElementById('res-total-interest').innerText = "¥" + Math.max(0, Math.round(totalInterest/10000)).toLocaleString() + "万";
+            document.getElementById('res-method-desc').innerText = method === 'equal-total' ? "元利均等：毎月の支払額が一定のプランです。" : "元金均等：元金を一定で返済し、利息が徐々に減るプランです。";
+
+            const statusEl = document.getElementById('limit-status');
+            if (amount === 0) {
+                statusEl.innerText = "借入額を入力してください";
+                statusEl.className = "mt-4 p-3 rounded-lg text-center text-[10px] font-bold bg-white/5 text-slate-400";
+            } else if (amount <= limitMan) {
+                statusEl.innerText = "借入可能範囲内です";
+                statusEl.className = "mt-4 p-3 rounded-lg text-center text-[10px] font-bold bg-green-500/20 text-green-400";
+            } else {
+                statusEl.innerText = "借入可能額を超過しています";
+                statusEl.className = "mt-4 p-3 rounded-lg text-center text-[10px] font-bold bg-red-500/20 text-red-400";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', update);
+    </script>
+</body>
+</html>
