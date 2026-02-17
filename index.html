@@ -18,6 +18,10 @@
             background-color: var(--navy-deep);
             color: #f8fafc;
             background-image: radial-gradient(circle at top right, rgba(197, 160, 89, 0.08), transparent);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .serif { font-family: 'Noto Serif JP', serif; }
         
@@ -151,17 +155,17 @@
         }
     </style>
 </head>
-<body class="py-12 px-4 md:px-8">
+<body class="py-8 md:py-12 px-4">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="text-center mb-12">
+    <div class="w-full max-w-6xl mx-auto flex flex-col items-center">
+        <header class="text-center mb-10 md:mb-12 w-full">
             <h1 class="text-3xl md:text-5xl font-black serif gold-gradient-text mb-4">フラット35 診断ボード</h1>
-            <p class="text-slate-400 text-sm max-w-2xl mx-auto">
+            <p class="text-slate-400 text-sm max-w-2xl mx-auto px-4">
                 数値を入力して、あなたの借入可能額と返済計画をシミュレーションしてください。
             </p>
         </header>
 
-        <div class="grid lg:grid-cols-12 gap-8">
+        <div class="grid lg:grid-cols-12 gap-8 w-full">
             <div class="lg:col-span-7 space-y-6">
                 
                 <!-- 属性情報 -->
@@ -214,7 +218,6 @@
                             <div>
                                 <label class="label-text block mb-4">団体信用生命保険</label>
                                 <select id="select-danshin" class="w-full" onchange="update()">
-                                    <!-- 先頭に全角スペースを追加して左右の余白を調整 -->
                                     <option value="standard" selected>　新機構団信 (一般)</option>
                                     <option value="joint">　連生団信 (+0.18%)</option>
                                     <option value="three-disease">　新三大疾病付 (+0.24%)</option>
@@ -285,12 +288,12 @@
 
             <!-- 右側：結果表示パネル -->
             <div class="lg:col-span-5 space-y-6">
-                <div class="premium-card p-10 bg-gradient-to-br from-slate-800 to-navy-deep border-gold-muted/40 shadow-2xl relative overflow-hidden">
+                <div class="premium-card p-8 md:p-10 bg-gradient-to-br from-slate-800 to-navy-deep border-gold-muted/40 shadow-2xl relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-muted to-transparent"></div>
                     <p class="text-[10px] font-bold text-gold-muted tracking-[0.4em] uppercase mb-6">借入可能額の目安 (審査基準)</p>
                     <div class="flex items-baseline gap-3 mb-4">
-                        <span class="text-6xl font-black serif gold-gradient-text" id="res-limit-amount">0</span>
-                        <span class="text-2xl font-bold text-gold-muted">万円</span>
+                        <span class="text-5xl md:text-6xl font-black serif gold-gradient-text" id="res-limit-amount">0</span>
+                        <span class="text-xl md:text-2xl font-bold text-gold-muted">万円</span>
                     </div>
                     <div class="space-y-4 mt-8 pt-8 border-t border-white/10 text-xs">
                         <div class="flex justify-between items-center">
@@ -305,7 +308,7 @@
                     </div>
                 </div>
 
-                <div class="premium-card p-10 space-y-10">
+                <div class="premium-card p-8 md:p-10 space-y-10">
                     <div class="text-center">
                         <p class="text-[10px] font-bold text-slate-500 tracking-[0.4em] uppercase mb-8">毎月の返済額 (団信反映済)</p>
                         <div class="flex items-center justify-around gap-4">
@@ -313,7 +316,7 @@
                                 <p class="text-[9px] text-gold-muted font-bold mb-3 uppercase tracking-[0.2em]">1〜5年目</p>
                                 <div class="flex items-baseline gap-1 justify-center">
                                     <span class="text-sm text-slate-500 font-bold">¥</span>
-                                    <span id="res-monthly-first" class="text-4xl font-black serif">0</span>
+                                    <span id="res-monthly-first" class="text-3xl md:text-4xl font-black serif">0</span>
                                 </div>
                                 <p class="text-[8px] text-gold-muted/70 mt-2 font-medium" id="label-rate-first"></p>
                             </div>
@@ -322,25 +325,24 @@
                                 <p class="text-[9px] text-slate-500 font-bold mb-3 uppercase tracking-[0.2em]">6年目以降</p>
                                 <div class="flex items-baseline gap-1 justify-center">
                                     <span class="text-sm text-slate-500 font-bold">¥</span>
-                                    <span id="res-monthly-step" class="text-3xl font-black serif text-slate-400">0</span>
+                                    <span id="res-monthly-step" class="text-2xl md:text-3xl font-black serif text-slate-400">0</span>
                                 </div>
                                 <p class="text-[8px] text-slate-500/70 mt-2 font-medium" id="label-rate-step"></p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+                    <div class="grid grid-cols-2 gap-4 md:gap-6">
+                        <div class="bg-white/5 p-4 md:p-5 rounded-2xl border border-white/5">
                             <p class="text-[9px] text-slate-500 font-bold mb-2 uppercase tracking-tighter">返済比率 (審査基準)</p>
-                            <p id="res-current-ratio" class="text-xl font-bold serif text-white">0%</p>
+                            <p id="res-current-ratio" class="text-lg md:text-xl font-bold serif text-white">0%</p>
                         </div>
-                        <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+                        <div class="bg-white/5 p-4 md:p-5 rounded-2xl border border-white/5">
                             <p class="text-[9px] text-slate-500 font-bold mb-2 uppercase tracking-tighter">概算利息総額</p>
-                            <p id="res-total-interest" class="text-xl font-bold serif text-gold-light">¥0万</p>
+                            <p id="res-total-interest" class="text-lg md:text-xl font-bold serif text-gold-light">¥0万</p>
                         </div>
                     </div>
 
-                    <!-- 注意事項セクション -->
                     <div class="p-5 rounded-2xl bg-white/5 border border-white/5">
                         <p class="text-[10px] font-bold text-slate-400 mb-2 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gold-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
